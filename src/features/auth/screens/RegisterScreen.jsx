@@ -14,10 +14,14 @@ import { useForm, Controller } from "react-hook-form";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 import Input from "../../../shared/components/Input";
 import Button from "../../../shared/components/Button";
+import { useAuth } from '../hooks/useAuth.js'
 
 import kinalSportsLogo from "../../../../assets/kinal_sports.png";
 
 const RegisterScreen = ({ navigation }) => {
+
+    const { handleRegister, loading } = useAuth();
+
     const {
         control,
         handleSubmit,
@@ -34,7 +38,19 @@ const RegisterScreen = ({ navigation }) => {
     });
 
     const onSubmit = async (data) => {
-        console.log(data);
+        try {
+            await handleRegister(data);
+            
+            Alert.alert(
+                "Registro exitoso",
+                "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
+                [{ text: "OK", onPress: () => navigation.navigate("Login") }]
+            )
+        } catch (error) {
+            console.error(error);
+            const message = error.response?.data?.message || "Error al registrarse";
+            Alert.alert("Error", message);
+        }
     };
 
     return (
